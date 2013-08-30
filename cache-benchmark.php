@@ -11,7 +11,14 @@ $default_param = array(
     "pretty"         => "false",     // 結果をpretty print
     "usleep"         => 0,           // usleep(マイクロ秒)
 );
-$param = (object) array_merge($default_param, $_GET);
+
+$option_param = array();
+if(isset($_GET) && $_GET){
+    $option_param = $_GET;
+}elseif(array_key_exists('argv', $_SERVER) && (count($_SERVER['argv']) == 2)){
+    $option_param = (array) json_decode($_SERVER['argv'][1]);
+}
+$param = (object) array_merge($default_param, $option_param);
 
 $cache = new $param->class();
 if($cache->{$param->connect_method}($param->server) === false){
@@ -71,6 +78,14 @@ class MemcacheEx extends Memcache {
     }
 }
 
+class MemcachedEx {
+    public function addServer($server){
+        return;
+    }
+    public function nonPaddServer($server){
+        return;
+    }
+}
 
 class Mysql {
     private $db = "test";
